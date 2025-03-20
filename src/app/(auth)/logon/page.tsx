@@ -11,7 +11,6 @@ import { api } from '@/lib/api'
 import { User as UserType } from '@/_types/user'
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation'
-import { AxiosError } from 'axios'
 
 export default function LogonPage() {
   const router = useRouter()
