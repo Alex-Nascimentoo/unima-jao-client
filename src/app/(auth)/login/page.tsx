@@ -14,7 +14,6 @@ import { Credentials } from '@/_types/user'
 import { toast } from 'react-toastify'
 
 export default function LoginPage() {
-  // const [qrcode, setQrcode] = React.useState('iVBORw0KGgoAAAANSUhEUgAAADEAAAAxAQAAAABb53yxAAABQ0lEQVR42mP4DwYNDLjoD5J3WH3YGxi+X8i9U/q9geFLxDGbo+JAOvzNBVYQHdduXwqkv1+PmFQLlP8gGhoaAlT//1+Y6XOQfuegT7PWNzD8+CNwNKW8geGTVLON0Xug+q8LRf8tb2D4OOf4DXH/BoZ/rzMXlgHlvzY/3iQ/v4Hh9+f85af1gTS79oV+oDmfDK/kJwLl/7q+vbUPaN7nXffN84D6fzLmnE6TB4r/P7w0COiO//Pk5WLrgfoyrs05s72B4ZvLxYv/gfQHJSNuUXugOwSbtxTub2D489Oy5SFQ/K/08ZDH/ED35Gokh6QDaenHNvuB6r4tzV/vDbT3W7C3xwKg/P+v37LFzYHmCKdGPc0Hqrvprl9uDgqHnIsf4oF0YJv+PKB5X0IsbWKB+r9fujb1NdD9H4RuX1i5H3f4QmkAckjWI1goHDgAAAAASUVORK5CYII=')
   const [qrcode, setQrcode] = React.useState('')
   const [userId, setUserId] = React.useState('')
   const [credentials, setCredentials] = React.useState<Credentials>({
@@ -156,6 +155,8 @@ export default function LoginPage() {
                 >
                   <Input
                     title=''
+                    type='email'
+                    required
                     placeholder='Digite seu email'
                     value={credentials.username}
                     onChange={e => setCredentials({ ...credentials, username: e.target.value })}
@@ -171,6 +172,7 @@ export default function LoginPage() {
                   <Input
                     title=''
                     type='password'
+                    required
                     placeholder='Digite sua senha'
                     value={credentials.password}
                     onChange={e => setCredentials({ ...credentials, password: e.target.value })}
