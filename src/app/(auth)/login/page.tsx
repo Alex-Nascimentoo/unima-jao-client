@@ -23,6 +23,14 @@ export default function LoginPage() {
   const [isRegistered, setIsRegistered] = React.useState(false)
 
   async function handleLogin() {
+    if (!credentials.username || credentials.username === '') {
+      toast.error('Email é obrigatório')
+      return
+    } else if (!credentials.password || credentials.password === '') {
+      toast.error('Senha é obrigatória')
+      return
+    }
+
     toast.info('Fazendo login...')
 
     const formData = new FormData()
@@ -156,7 +164,6 @@ export default function LoginPage() {
                   <Input
                     title=''
                     type='email'
-                    required={true}
                     placeholder='Digite seu email'
                     value={credentials.username}
                     onChange={e => setCredentials({ ...credentials, username: e.target.value })}
@@ -172,7 +179,6 @@ export default function LoginPage() {
                   <Input
                     title=''
                     type='password'
-                    required={true}
                     placeholder='Digite sua senha'
                     value={credentials.password}
                     onChange={e => setCredentials({ ...credentials, password: e.target.value })}
