@@ -22,6 +22,17 @@ export default function LogonPage() {
   })
 
   async function handleSubmit() {
+    if (!user.name || user.name === '') {
+      toast.error('Nome do usuário é obrigatório')
+      return
+    } else if (!user.email || user.email === '') {
+      toast.error('Email do usuário é obrigatório')
+      return
+    } else if (!user.password || user.password === '') {
+      toast.error('Senha é obrigatório')
+      return
+    }
+
     try {
       const response = await api.post('/auth/signup', {
         nome: user.name,
@@ -122,7 +133,6 @@ export default function LogonPage() {
             <Input
               title=''
               placeholder='Nome do usuário'
-              required={true}
               value={user.name}
               onChange={e => setUser({ ...user, name: e.target.value })}
               icon={
@@ -137,7 +147,6 @@ export default function LogonPage() {
             <Input
               title=''
               type='email'
-              required={true}
               placeholder='Digite seu email'
               value={user.email}
               onChange={e => setUser({ ...user, email: e.target.value })}
@@ -153,7 +162,6 @@ export default function LogonPage() {
             <Input
               title=''
               type='password'
-              required={true}
               placeholder='Digite sua senha'
               value={user.password}
               onChange={e => setUser({ ...user, password: e.target.value })}
