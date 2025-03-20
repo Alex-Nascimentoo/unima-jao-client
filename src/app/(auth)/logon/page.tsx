@@ -11,6 +11,7 @@ import { api } from '@/lib/api'
 import { User as UserType } from '@/_types/user'
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation'
+import { AxiosError } from 'axios'
 
 export default function LogonPage() {
   const router = useRouter()
@@ -43,19 +44,30 @@ export default function LogonPage() {
       if (response.status === 409) {
         toast.error('Email já cadastrado')
         return
-      } else if (response.status === 422) {
+      }
+
+      if (response.status === 422) {
         toast.error('Email inválido')
         return
-      } else {
+      }
+
+      if (response.status !== 201) {
         toast.error('Erro ao cadastrar usuário')
         return
       }
 
       toast.success('Usuário cadastrado com sucesso')
       router.push('/login')
-    } catch (err) {
-      console.log(err)
-      toast.error('Erro ao cadstrar usuário')
+    } catch (err: any) {
+      if (err.response.status === 409) {
+        toast.error('Email já cadastrado')
+        return
+      } else if (err.response.status === 422) {
+        toast.error('Email inválido')
+        return
+      }
+
+      toast.error('Erro ao cadastrar usuário')
       return
     }
   }
