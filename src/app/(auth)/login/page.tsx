@@ -42,6 +42,7 @@ export default function LoginPage() {
       const { qrcode } = await response.data.qrcode
       setQrcode(qrcode)
     } catch (err) {
+      console.log(err)
       toast.error('Erro ao fazer login')
       return
     }
