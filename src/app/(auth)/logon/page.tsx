@@ -22,19 +22,25 @@ export default function LogonPage() {
   })
 
   async function handleSubmit() {
-    const response = await api.post('/auth/signup', {
-      nome: user.name,
-      email: user.email,
-      password: user.password,
-    })
+    try {
+      const response = await api.post('/auth/signup', {
+        nome: user.name,
+        email: user.email,
+        password: user.password,
+      })
 
-    if (response.status !== 201) {
-      toast.error('Erro ao cadastrar usuário')
+      if (response.status !== 201) {
+        toast.error('Erro ao cadastrar usuário')
+        return
+      }
+
+      toast.success('Usuário cadastrado com sucesso')
+      router.push('/login')
+    } catch (err) {
+      console.log(err)
+      toast.error('Erro ao cadstrar usuário')
       return
     }
-
-    toast.success('Usuário cadastrado com sucesso')
-    router.push('/login')
   }
 
   return (
