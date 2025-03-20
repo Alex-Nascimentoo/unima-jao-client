@@ -1,9 +1,7 @@
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
-import { getUrl } from './lib/getUrl';
 
 export async function middleware(req: NextRequest) {
-  const redirectURL = new URL('/login', req.url)
   const isAuthenticated = (await cookies()).get('jao.token')
   const pathname = req.nextUrl.pathname;
 

@@ -1,5 +1,4 @@
 import { Button } from '@/_components/Button'
-import Image from 'next/image'
 import React from 'react'
 import VerifyOtp from './VerifyOtp'
 
