@@ -156,7 +156,7 @@ export default function LoginPage() {
                   <Input
                     title=''
                     type='email'
-                    required
+                    required={true}
                     placeholder='Digite seu email'
                     value={credentials.username}
                     onChange={e => setCredentials({ ...credentials, username: e.target.value })}
@@ -172,7 +172,7 @@ export default function LoginPage() {
                   <Input
                     title=''
                     type='password'
-                    required
+                    required={true}
                     placeholder='Digite sua senha'
                     value={credentials.password}
                     onChange={e => setCredentials({ ...credentials, password: e.target.value })}

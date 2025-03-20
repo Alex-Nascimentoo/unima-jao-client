@@ -122,7 +122,7 @@ export default function LogonPage() {
             <Input
               title=''
               placeholder='Nome do usuário'
-              required
+              required={true}
               value={user.name}
               onChange={e => setUser({ ...user, name: e.target.value })}
               icon={
@@ -137,7 +137,7 @@ export default function LogonPage() {
             <Input
               title=''
               type='email'
-              required
+              required={true}
               placeholder='Digite seu email'
               value={user.email}
               onChange={e => setUser({ ...user, email: e.target.value })}
@@ -153,7 +153,7 @@ export default function LogonPage() {
             <Input
               title=''
               type='password'
-              required
+              required={true}
               placeholder='Digite sua senha'
               value={user.password}
               onChange={e => setUser({ ...user, password: e.target.value })}
