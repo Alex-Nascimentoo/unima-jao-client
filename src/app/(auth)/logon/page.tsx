@@ -40,7 +40,13 @@ export default function LogonPage() {
         password: user.password,
       })
 
-      if (response.status !== 201) {
+      if (response.status === 409) {
+        toast.error('Email já cadastrado')
+        return
+      } else if (response.status === 422) {
+        toast.error('Email inválido')
+        return
+      } else if (response.status !== 201) {
         toast.error('Erro ao cadastrar usuário')
         return
       }
