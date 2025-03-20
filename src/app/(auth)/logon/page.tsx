@@ -46,7 +46,7 @@ export default function LogonPage() {
       } else if (response.status === 422) {
         toast.error('Email inválido')
         return
-      } else if (response.status !== 201) {
+      } else {
         toast.error('Erro ao cadastrar usuário')
         return
       }
