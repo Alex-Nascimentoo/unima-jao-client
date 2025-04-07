@@ -89,7 +89,7 @@ export default function BankAccountForm(props: Props) {
       >
         <Input
           title='Nome da conta'
-          placeholder='Conta de investimentos'
+          placeholder='Ex: Investimentos'
           value={bankAccount?.nome ?? ''}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setBankAccount({
