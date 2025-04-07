@@ -4,10 +4,15 @@ import { SignOut, SquaresFour, TagSimple, Wallet } from '@phosphor-icons/react'
 import Link from 'next/link'
 import React from 'react'
 import Cookies from 'js-cookie'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 export default function Sidebar() {
   const router = useRouter()
+  const pathname = usePathname()
+
+  const isActive = (path: string) => {
+    return pathname === path
+  }
 
   async function signOut() {
     // Logout logic here
@@ -51,9 +56,11 @@ export default function Sidebar() {
           >
             <Wallet
               size={32}
+              data-is-active={isActive('/app/conta-bancaria')}
               className='
               duration-200
               hover:text-accent
+              data-[is-active=true]:text-accent
               '
             />
           </Link>
@@ -63,9 +70,11 @@ export default function Sidebar() {
           >
             <TagSimple
               size={32}
+              data-is-active={isActive('/app/categoria')}
               className='
               duration-200
               hover:text-accent
+              data-[is-active=true]:text-accent
               '
             />
           </Link>
