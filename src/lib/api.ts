@@ -8,14 +8,30 @@ export const api = axios.create({
 
 async function refreshToken() {
   try {
-    const response = await api.post('/auth/manual')
-    const newToken: string = response.data.access_token
+    const refreshToken = Cookies.get('jao.refreshToken')
+
+    const refreshApi = axios.create({
+      baseURL: process.env.NEXT_PUBLIC_API_URL,
+    })
+
+    const response = await refreshApi.post('/auth/token/refresh', {}, {
+      headers: {
+        'Authorization': `Bearer ${refreshToken}`
+      }
+    })
+    const newToken: string = response.data[0].access_token
+    const newRefreshToken: string = response.data[1].refresh_token
 
     const cookiesExpiresInSecunds = 60 * 10 // 10 min
 
     Cookies.set('jao.token', newToken, {
       path: '/',
       expires: cookiesExpiresInSecunds,
+    })
+
+    Cookies.set('jao.refreshToken', newRefreshToken, {
+      path: '/',
+      expires: 60 * 60 * 24
     })
 
     return {
@@ -49,8 +65,8 @@ api.interceptors.response.use(
     const originalRequest = error.config
 
     if (countRetry > 5) {
-      Cookies.remove('refreshToken')
-      document.cookie = 'jao.token=; Path=/; max-age='
+      Cookies.remove('jao.refreshToken')
+      Cookies.remove('jao.token')
       window.location.href = '/login'
 
       return Promise.reject(error)
@@ -62,6 +78,11 @@ api.interceptors.response.use(
 
       originalRequest._retry = true
       const refreshResponse = await refreshToken()
+
+      if (!refreshResponse?.token) {
+        return
+      }
+
       const token = refreshResponse?.token
       axios.defaults.headers.common.Authorization = 'Bearer ' + token
       const cookiesExpiresInSecunds = 60 * 10 // 10 min
@@ -71,7 +92,7 @@ api.interceptors.response.use(
       return Promise.reject(error)
     } else {
       Cookies.remove('jao.token')
-      Cookies.remove('refreshToken')
+      Cookies.remove('jao.refreshToken')
       window.location.href = '/login'
     }
     return Promise.reject(error)

@@ -36,6 +36,10 @@ export default function VerifyOtp(props: Props) {
         expires: expireTime,
       })
 
+      Cookies.set('jao.refreshToken', response.data.tokens[1].refresh_token, {
+        expires: 1000 * 60 * 60 * 24
+      })
+
       toast.success('OTP verificado com sucesso')
       router.push('/app')
     } catch (err) {

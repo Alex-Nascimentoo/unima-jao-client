@@ -205,7 +205,7 @@ export default function LoginPage() {
                     >Login</Button>
 
                     <a
-                      href="#"
+                      href="/forgot"
                       className='
                       text-light-gray font-medium text-sm text-right
                       duration-200

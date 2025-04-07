@@ -39,9 +39,9 @@ export function Input({
       <div
         data-is-disabled={rest.disabled}
         className={`
-          mt-3 px-[10px] h-12 w-full
+          mt-0 px-[10px] h-10 w-full
           flex items-center gap-2
-          rounded-lg bg-[#fff] border border-dark-gray
+          rounded-lg bg-[#fff] shadow-sm
 
           data-[is-disabled=true]:!bg-white
           ${wrapperClasses}
