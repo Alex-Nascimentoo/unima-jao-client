@@ -21,17 +21,34 @@ export default function BankAccountForm(props: Props) {
   const [bankAccount, setBankAccount] = React.useState<BankAccount | null>(props.bankAccount ?? null)
 
   async function handleSubmit() {
-    const response = await api.post('/contabancaria/criaconta', {
-      nome: bankAccount?.nome,
-      saldo: bankAccount?.saldo_conta ? bankAccount.saldo_conta * 100 : 0,
-    })
+    // Update bank account if passed as prop
+    // Otherwise create a new one
+    if (props.bankAccount) {
+      const response = await api.put(`/contabancaria/atualizaconta/${props.bankAccount.id}`, {
+        nome: bankAccount?.nome,
+        saldo_conta: bankAccount?.saldo_conta ? bankAccount.saldo_conta * 100 : 0,
+      })
 
-    if (response.status !== 401 && response.status !== 200) {
-      toast.error('Erro ao criar conta bancária')
-      return
+      if (response.status !== 401 && response.status !== 200) {
+        toast.error('Erro ao atualizar conta bancária')
+        return
+      }
+
+      toast.success('Conta bancária atualizada com sucesso')
+    } else {
+      const response = await api.post('/contabancaria/criaconta', {
+        nome: bankAccount?.nome,
+        saldo: bankAccount?.saldo_conta ? bankAccount.saldo_conta * 100 : 0,
+      })
+
+      if (response.status !== 401 && response.status !== 200) {
+        toast.error('Erro ao criar conta bancária')
+        return
+      }
+
+      toast.success('Conta bancária criada com sucesso')
     }
 
-    toast.success('Conta bancária criada com sucesso')
     props.onClose()
     await props.fetchBankAccounts()
   }
