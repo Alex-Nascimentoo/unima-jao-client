@@ -1,6 +1,6 @@
 'use client'
 
-import { SignOut, SquaresFour, Wallet } from '@phosphor-icons/react'
+import { SignOut, SquaresFour, TagSimple, Wallet } from '@phosphor-icons/react'
 import Link from 'next/link'
 import React from 'react'
 import Cookies from 'js-cookie'
@@ -42,6 +42,7 @@ export default function Sidebar() {
           className='
           mt-4 pt-10 px-6
           border-t border-light-gray
+          flex flex-col gap-8
           '
         >
 
@@ -49,6 +50,18 @@ export default function Sidebar() {
             href={'/app/conta-bancaria'}
           >
             <Wallet
+              size={32}
+              className='
+              duration-200
+              hover:text-accent
+              '
+            />
+          </Link>
+
+          <Link
+            href={'/app/categoria'}
+          >
+            <TagSimple
               size={32}
               className='
               duration-200
