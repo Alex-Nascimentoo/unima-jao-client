@@ -24,9 +24,10 @@ export default function BankAccountForm(props: Props) {
     // Update bank account if passed as prop
     // Otherwise create a new one
     if (props.bankAccount) {
-      const response = await api.put(`/contabancaria/atualizaconta/${props.bankAccount.id}`, {
+      const response = await api.patch(`/contabancaria/editaconta`, {
+        id: props.bankAccount.id,
         nome: bankAccount?.nome,
-        saldo_conta: bankAccount?.saldo_conta ? bankAccount.saldo_conta * 100 : 0,
+        saldo: bankAccount?.saldo_conta ? bankAccount.saldo_conta * 100 : 0,
       })
 
       if (response.status !== 401 && response.status !== 200) {
