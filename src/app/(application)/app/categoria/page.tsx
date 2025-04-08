@@ -101,12 +101,20 @@ export default function CategoriaPage() {
         flex flex-col gap-3
         '
       >
-        {/* {
-          categoryList?.length && categoryList.map((category: Category) => (
-            <p>{ category.categoria }</p>
+        {
+          categoryList?.length && categoryList.map((category: Category, index) => (
+            <CategoryCard
+              key={index}
+              category={category}
+              fetchCategories={fetchCategories}
+              handleEdit={() => {
+                setCategory(category)
+                setIsOpen(true)
+              }}
+            />
           ))
-        } */}
-        <CategoryCard
+        }
+        {/* <CategoryCard
           category={{
             categoria: 'Trabaiu',
             tipo_id: 1,
@@ -142,7 +150,7 @@ export default function CategoriaPage() {
             })
           setIsOpen(true)
           }}
-        />
+        /> */}
       </div>
     </div>
   )

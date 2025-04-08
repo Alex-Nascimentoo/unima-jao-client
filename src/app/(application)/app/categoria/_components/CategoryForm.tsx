@@ -26,7 +26,11 @@ export default function CategoryForm(props: Props) {
     // Update object if passed as prop
     // Otherwise create a new one
     if (props.category) {
-      const response = await api.put(`/contabancaria/atualizaconta/${props.category.id}`, category)
+      const response = await api.patch(`/categorias`, {
+        id: props.category.id,
+        tipo: category?.tipo_id,
+        categoria: category?.categoria,
+      })
 
       if (response.status !== 401 && response.status !== 200) {
         toast.error('Erro ao atualizar categoria')
@@ -35,28 +39,34 @@ export default function CategoryForm(props: Props) {
 
       toast.success('Categoria atualizada com sucesso')
     } else {
-      toast.info('Methodo não implementado')
+      const response = await api.post('/categorias', {
+        tipo: category?.tipo_id,
+        categoria: category?.categoria,
+      })
 
-      // const response = await api.post('/contabancaria/criaconta', {
-      //   categoria: category?.categoria,
-      //   saldo: category?.saldo_conta ? category.saldo_conta * 100 : 0,
-      // })
+      if (response.status !== 401 && response.status !== 201) {
+        toast.error('Erro ao criar categoria')
+        return
+      }
 
-      // if (response.status !== 401 && response.status !== 200) {
-      //   toast.error('Erro ao criar conta bancária')
-      //   return
-      // }
-
-      // toast.success('Conta bancária criada com sucesso')
+      toast.success('Categoria criada com sucesso')
     }
 
+    setCategory({
+      id: 0,
+      tipo_id: 1,
+      categoria: '',
+    } as Category)
     props.onClose()
     await props.fetchCategories()
   }
 
   React.useEffect(() => {
     if (!props.category) {
-      setCategory(null)
+      setCategory({
+        tipo_id: 1,
+        categoria: '',
+      } as Category)
       return
     }
 
