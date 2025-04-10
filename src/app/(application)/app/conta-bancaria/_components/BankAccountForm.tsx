@@ -27,7 +27,7 @@ export default function BankAccountForm(props: Props) {
       const response = await api.patch(`/contabancaria/editaconta`, {
         id: props.bankAccount.id,
         nome: bankAccount?.nome,
-        saldo: bankAccount?.saldo_conta ? bankAccount.saldo_conta * 100 : 0,
+        saldo: bankAccount?.saldo_conta ? Math.round(bankAccount.saldo_conta * 100) : 0,
       })
 
       if (response.status !== 401 && response.status !== 200) {
@@ -39,10 +39,10 @@ export default function BankAccountForm(props: Props) {
     } else {
       const response = await api.post('/contabancaria/criaconta', {
         nome: bankAccount?.nome,
-        saldo: bankAccount?.saldo_conta ? bankAccount.saldo_conta * 100 : 0,
+        saldo: bankAccount?.saldo_conta ? Math.round(bankAccount.saldo_conta * 100) : 0,
       })
 
-      if (response.status !== 401 && response.status !== 200) {
+      if (response.status !== 401 && response.status !== 201) {
         toast.error('Erro ao criar conta bancária')
         return
       }
