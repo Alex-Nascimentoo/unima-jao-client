@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import bgImage from '../../../../public/bg-logo.png'
@@ -10,7 +10,15 @@ import { LockOpen } from '@phosphor-icons/react'
 import { toast } from 'react-toastify'
 import { api } from '@/lib/api'
 
-export default function RecoverPassword() {
+export default function Page() {
+  return (
+    <Suspense>
+      <RecoverPassword />
+    </Suspense>
+  )
+}
+
+function RecoverPassword() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
