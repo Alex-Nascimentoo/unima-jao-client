@@ -6,4 +6,13 @@ export type Movement = {
   data: string
   categoria_id: number
   tipo_id: number
+  descricao: string
+}
+
+export type MovementList = {
+  [key: string]: { CREDIT: number; DEBIT: number }
+}
+
+export type ActionList = {
+  [key: string]: number
 }

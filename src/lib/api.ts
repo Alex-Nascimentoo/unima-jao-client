@@ -65,9 +65,9 @@ api.interceptors.response.use(
     const originalRequest = error.config
 
     if (countRetry > 5) {
-      Cookies.remove('jao.refreshToken')
-      Cookies.remove('jao.token')
-      window.location.href = '/login'
+      // Cookies.remove('jao.refreshToken')
+      // Cookies.remove('jao.token')
+      // window.location.href = '/login'
 
       return Promise.reject(error)
     } else if (
@@ -91,9 +91,10 @@ api.interceptors.response.use(
     } else if (error instanceof AxiosError) {
       return Promise.reject(error)
     } else {
-      Cookies.remove('jao.token')
-      Cookies.remove('jao.refreshToken')
-      window.location.href = '/login'
+      console.log('error: ', error)
+      // Cookies.remove('jao.token')
+      // Cookies.remove('jao.refreshToken')
+      // window.location.href = '/login'
     }
     return Promise.reject(error)
   },

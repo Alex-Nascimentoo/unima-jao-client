@@ -5,8 +5,8 @@ export async function middleware(req: NextRequest) {
   const isAuthenticated = (await cookies()).get('jao.token')
   const pathname = req.nextUrl.pathname;
 
-  if ((pathname === '/login' || pathname === '/logon') && isAuthenticated) {
-    return NextResponse.redirect(new URL('/app', req.url))
+  if ((pathname === '/login' || pathname === '/logon' || pathname === '/app') && isAuthenticated) {
+    return NextResponse.redirect(new URL('/app/dashboard', req.url))
   }
 
   if ((pathname.includes('/app') || pathname === '/') && !isAuthenticated) {

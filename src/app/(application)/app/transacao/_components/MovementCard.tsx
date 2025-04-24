@@ -2,38 +2,46 @@
 
 import { Button } from '@/_components/Button'
 import Modal from '@/_components/Modal'
-import { BankAccount } from '@/_types/bankAccount'
+import { Category } from '@/_types/category'
+import { Movement } from '@/_types/movement'
 import { api } from '@/lib/api'
-import { maskCurrency } from '@/utils/masks'
-import { DotsThreeOutlineVertical, PencilSimple, Trash } from '@phosphor-icons/react'
-import { useRouter } from 'next/navigation'
+import { formatDate, maskCurrency } from '@/utils/masks'
+import { ArrowDown, ArrowUp, DotsThreeOutlineVertical, PencilSimple, Trash } from '@phosphor-icons/react'
 import React from 'react'
 import { toast } from 'react-toastify'
 
 type Props = {
-  account: BankAccount
-  fetchBankAccounts: () => Promise<void>
+  movement: Movement
+  fetchMovements: () => Promise<void>
   handleEdit: () => void
 }
 
-export default function BankAccountCard(props: Props) {
-  const router = useRouter()
-
+export default function MovementCard(props: Props) {
   const [isMenuOpen, setIsMenuOpen] = React.useState<boolean>(false)
   const [isExcludeOpen, setIsExcludeOpen] = React.useState<boolean>(false)
+  const [categoryList, setCategoryList] = React.useState<Category[]>()
 
   async function handleSubmit() {
-    const response = await api.delete(`/contabancaria?id=${props.account.id}`)
+    const response = await api.delete(`/apagatransacao?id=${props.movement.id}`)
 
     if (response.status !== 200) {
-      toast.error('Erro ao excluir conta bancária')
+      toast.error('Erro ao excluir transação')
       return
     }
 
-    toast.success('Conta bancária excluída com sucesso')
+    toast.success('Transação excluída com sucesso')
     setIsExcludeOpen(false)
-    await props.fetchBankAccounts()
+    await props.fetchMovements()
   }
+
+  React.useEffect(() => {
+    async function fetchCategories() {
+      const response = await api.get('/categorias')
+      setCategoryList(response.data)
+    }
+
+    fetchCategories()
+  }, [])
 
   return (
     <div
@@ -44,17 +52,57 @@ export default function BankAccountCard(props: Props) {
       flex items-center
       `}
     >
-      <p
+      {
+        props.movement.tipo_id === 1
+          ? <ArrowUp
+            weight='bold'
+            className='
+            text-green
+            '
+            size={24}
+          />
+          : <ArrowDown
+            weight='bold'
+            className='
+            text-red
+            '
+            size={24}
+          />
+      }
+
+      <div
         className='
-        w-[70%]
+        w-[70%] ml-3
+        flex flex-col
         '
-      >{ props.account.nome }</p>
+      >
+
+        <p
+          className='
+
+          '
+        >{ props.movement.descricao }</p>
+
+        <p
+          className='
+          text-[#888] text-[.95rem]
+          '
+        >
+          { categoryList?.filter(c => c.id === props.movement.categoria_id)[0].categoria }
+        </p>
+      </div>
 
       <p
         className='
         w-[25%]
         '
-      >{ maskCurrency(props.account.saldo_conta / 100) }</p>
+      >{ maskCurrency(props.movement.valor / 100) }</p>
+
+      <p
+        className='
+        w-[25%]
+        '
+      >{ formatDate(props.movement.data, true) }</p>
 
       <div
         className='
@@ -153,7 +201,7 @@ export default function BankAccountCard(props: Props) {
             font-normal
             mt-5
             '
-          >Você está prestes a deletar a conta: <b>{ props.account.nome }</b></p>
+          >Você está prestes a deletar a transação: <b>{ props.movement.descricao }</b></p>
 
           <div
             className='

@@ -1,6 +1,6 @@
 'use client'
 
-import { SignOut, SquaresFour, TagSimple, Wallet } from '@phosphor-icons/react'
+import { CashRegister, SignOut, SquaresFour, TagSimple, Wallet } from '@phosphor-icons/react'
 import Link from 'next/link'
 import React from 'react'
 import Cookies from 'js-cookie'
@@ -36,12 +36,29 @@ export default function Sidebar() {
         '
       /> */}
       <div>
-        <h1
+        {/* <h1
           className='
           w-full
           text-center text-2xl font-bold
           '
-        >Jão</h1>
+        >Jão</h1> */}
+        <Link
+          href={'/app/dashboard'}
+          className='
+          flex justify-center
+          text-center
+          '
+        >
+          <SquaresFour
+            size={32}
+            data-is-active={isActive('/app/dashboard')}
+            className='
+            duration-200
+            hover:text-accent
+            data-[is-active=true]:text-accent
+            '
+          />
+        </Link>
 
         <nav
           className='
@@ -71,6 +88,20 @@ export default function Sidebar() {
             <TagSimple
               size={32}
               data-is-active={isActive('/app/categoria')}
+              className='
+              duration-200
+              hover:text-accent
+              data-[is-active=true]:text-accent
+              '
+            />
+          </Link>
+
+          <Link
+            href={'/app/transacao'}
+          >
+            <CashRegister
+              size={32}
+              data-is-active={isActive('/app/transacao')}
               className='
               duration-200
               hover:text-accent

@@ -5,6 +5,7 @@ import { Movement } from "@/_types/movement"
 import React from "react"
 import MovementForm from "./_components/MovementForm"
 import { api } from "@/lib/api"
+import MovementCard from "./_components/MovementCard"
 
 export default function TransacaoPage() {
   const [isOpen, setIsOpen] = React.useState<boolean>(false)
@@ -13,8 +14,12 @@ export default function TransacaoPage() {
 
   async function fetchMovements() {
     const response = await api.get('/transacoes')
-    setMovementList(response.data)
+    setMovementList(response.data.Transacoes)
   }
+
+  React.useEffect(() => {
+    fetchMovements()
+  }, [])
 
   return (
     <div
@@ -31,7 +36,7 @@ export default function TransacaoPage() {
           className='
           text-3xl font-semibold text-accent
           '
-        >Categorias</h1>
+        >Transações</h1>
 
         <button
           className='
@@ -45,7 +50,7 @@ export default function TransacaoPage() {
             setIsOpen(true)
           }}
         >
-          Nova Categoria
+          Nova Transação
         </button>
       </div>
 
@@ -75,18 +80,49 @@ export default function TransacaoPage() {
           className='
           w-[70%]
           '
-        >Categoria</p>
+        >Descrição</p>
+
         <p
           className='
           w-[25%]
           '
-        >Tipo</p>
+        >Valor</p>
+
+        <p
+          className='
+          w-[25%]
+          '
+        >Data</p>
+
         <p
           className='
           w-[5%]
           text-center
           '
         >Ações</p>
+      </div>
+
+      <div
+        className='
+        pt-2 min-h-full
+        flex flex-col gap-3
+        '
+      >
+        {
+          movementList?.length && movementList.map((movement, index) => (
+            <>
+            <MovementCard
+              key={index}
+              movement={movement}
+              fetchMovements={fetchMovements}
+              handleEdit={() => {
+                setMovement(movement)
+                setIsOpen(true)
+              }}
+            />
+            </>
+          ))
+        }
       </div>
     </div>
   )
