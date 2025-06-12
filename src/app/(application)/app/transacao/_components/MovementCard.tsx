@@ -2,7 +2,7 @@
 
 import { Button } from '@/_components/Button'
 import Modal from '@/_components/Modal'
-import { Category } from '@/_types/category'
+import { BankAccount } from '@/_types/bankAccount'
 import { Movement } from '@/_types/movement'
 import { api } from '@/lib/api'
 import { formatDate, maskCurrency } from '@/utils/masks'
@@ -19,7 +19,7 @@ type Props = {
 export default function MovementCard(props: Props) {
   const [isMenuOpen, setIsMenuOpen] = React.useState<boolean>(false)
   const [isExcludeOpen, setIsExcludeOpen] = React.useState<boolean>(false)
-  const [categoryList, setCategoryList] = React.useState<Category[]>()
+  const [bankAccountList, setBankAccountList] = React.useState<BankAccount[]>()
 
   async function handleSubmit() {
     const response = await api.delete(`/apagatransacao?id=${props.movement.id}`)
@@ -35,12 +35,12 @@ export default function MovementCard(props: Props) {
   }
 
   React.useEffect(() => {
-    async function fetchCategories() {
-      const response = await api.get('/categorias')
-      setCategoryList(response.data)
+    async function fetchBankAccounts() {
+      const response = await api.get('/contabancaria')
+      setBankAccountList(response.data)
     }
 
-    fetchCategories()
+    fetchBankAccounts()
   }, [])
 
   return (
@@ -54,14 +54,14 @@ export default function MovementCard(props: Props) {
     >
       {
         props.movement.tipo_id === 1
-          ? <ArrowUp
+          ? <ArrowDown
             weight='bold'
             className='
             text-green
             '
             size={24}
           />
-          : <ArrowDown
+          : <ArrowUp
             weight='bold'
             className='
             text-red
@@ -88,7 +88,7 @@ export default function MovementCard(props: Props) {
           text-[#888] text-[.95rem]
           '
         >
-          { categoryList?.filter(c => c.id === props.movement.categoria_id)[0].categoria }
+          { bankAccountList?.filter(c => c.id === props.movement.conta_bancaria_id)[0].nome }
         </p>
       </div>
 

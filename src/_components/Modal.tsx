@@ -5,6 +5,7 @@ type Props = {
   children: React.ReactNode
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  clear?: () => void
 }
 
 export default function Modal(props: Props) {
@@ -27,7 +28,10 @@ export default function Modal(props: Props) {
         absolute top-30 right-40
         cursor-pointer
         '
-        onClick={() => props.setIsOpen(false)}
+        onClick={() => {
+          props.clear ? props.clear() : () => {}
+          props.setIsOpen(false)
+        }}
       />
 
       {props.children}

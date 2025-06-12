@@ -11,10 +11,14 @@ import { api } from '@/lib/api'
 import { User as UserType } from '@/_types/user'
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation'
+import VerifyLogon from './VerifyLogon'
 
 export default function LogonPage() {
   const router = useRouter()
 
+  const [qrcode, setQrcode] = React.useState('')
+  const [userId, setUserId] = React.useState('')
+  const [isRegistered, setIsRegistered] = React.useState(false)
   const [user, setUser] = React.useState<UserType>({
     name: '',
     email: '',
@@ -34,6 +38,8 @@ export default function LogonPage() {
     }
 
     try {
+      toast.info('Cadastrando usuário...')
+
       const response = await api.post('/auth/signup', {
         nome: user.name,
         email: user.email,
@@ -56,7 +62,36 @@ export default function LogonPage() {
       }
 
       toast.success('Usuário cadastrado com sucesso')
-      router.push('/login')
+
+      // Get qr code
+      const formData = new FormData()
+      formData.append('username', user.email)
+      formData.append('password', user.password)
+
+      const loginResponse = await api.post('/auth/login', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+
+      if (loginResponse.status !== 200) {
+        toast.error('Erro ao fazer login')
+        return
+      }
+
+      setUserId(loginResponse.data.id)
+
+      if (loginResponse.data.primeiro_login !== undefined) {
+        setIsRegistered(true)
+        setQrcode('a')
+        return
+      }
+
+      const qrResponse = await api.get(`/auth/qr/${loginResponse.data.id}`)
+
+      setQrcode(qrResponse.data.qrcode)
+
+      // router.push('/login')
     } catch (err: any) {
       if (err.response.status === 409) {
         toast.error('Email já cadastrado')
@@ -135,90 +170,110 @@ export default function LogonPage() {
           flex flex-col items-center justify-center
           '
         >
-          <h1
-            className='
-            text-4xl font-semibold text-primary
-            '
-          >Cadastro</h1>
+          {
+            qrcode !== '' ? (
+              <VerifyLogon
+                qrcode={qrcode}
+                userId={userId}
+                isRegistered={isRegistered}
+              />
+            ) : (
+              <>
 
-          <form
-            className='
-            mt-6 w-[85%]
-            flex flex-col gap-2
-            '
-          >
-            <Input
-              title=''
-              placeholder='Nome do usuário'
-              value={user.name}
-              onChange={e => setUser({ ...user, name: e.target.value })}
-              icon={
-                <User
-                  size={24}
-                  weight='bold'
-                  className='text-accent'
-                />
-              }
-            />
+                <h1
+                  className='
+                  text-4xl font-semibold text-primary
+                  '
+                >Cadastro</h1>
 
-            <Input
-              title=''
-              type='email'
-              placeholder='Digite seu email'
-              value={user.email}
-              onChange={e => setUser({ ...user, email: e.target.value })}
-              icon={
-                <EnvelopeSimple
-                  size={24}
-                  weight='bold'
-                  className='text-accent'
-                />
-              }
-            />
+                <form
+                  className='
+                  mt-6 w-[85%]
+                  flex flex-col gap-2
+                  '
+                >
+                  <Input
+                    title=''
+                    placeholder='Nome do usuário'
+                    value={user.name}
+                    onChange={e => setUser({ ...user, name: e.target.value })}
+                    icon={
+                      <User
+                        size={24}
+                        weight='bold'
+                        className='text-accent'
+                      />
+                    }
+                  />
 
-            <Input
-              title=''
-              type='password'
-              placeholder='Digite sua senha'
-              value={user.password}
-              onChange={e => setUser({ ...user, password: e.target.value })}
-              icon={
-                <LockOpen
-                  size={24}
-                  weight='bold'
-                  className='text-accent'
-                />
-              }
-            />
+                  <Input
+                    title=''
+                    type='email'
+                    placeholder='Digite seu email'
+                    value={user.email}
+                    onChange={e => setUser({ ...user, email: e.target.value })}
+                    icon={
+                      <EnvelopeSimple
+                        size={24}
+                        weight='bold'
+                        className='text-accent'
+                      />
+                    }
+                  />
 
-            <div
-              className='
-              flex gap-4
-              '
-            >
-              <Button
-                type='button'
-                onClick={() => router.push('/login')}
-                classes='
-                mt-3
-                bg-white
-                text-accent!
+                  <Input
+                    title=''
+                    type='password'
+                    placeholder='Digite sua senha'
+                    value={user.password}
+                    onChange={e => setUser({ ...user, password: e.target.value })}
+                    onKeyUp={e => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        handleSubmit()
+                      }
+                    }}
+                    icon={
+                      <LockOpen
+                        size={24}
+                        weight='bold'
+                        className='text-accent'
+                      />
+                    }
+                  />
 
-                hover:text-white!
-                hover:bg-accent!
-                '
-              >Cancelar</Button>
+                  <div
+                    className='
+                    flex gap-4
+                    '
+                  >
+                    <Button
+                      type='button'
+                      onClick={() => router.push('/login')}
+                      classes='
+                      mt-3
+                      bg-white
+                      text-accent!
 
-              <Button
-                type='button'
-                classes='
-                mt-3
-                '
-                onClick={handleSubmit}
-              >Registrar</Button>
-            </div>
+                      hover:text-white!
+                      hover:bg-accent!
+                      '
+                    >Cancelar</Button>
 
-          </form>
+                    <Button
+                      type='button'
+                      classes='
+                      mt-3
+                      '
+                      onClick={handleSubmit}
+                    >Registrar</Button>
+                  </div>
+
+                </form>
+              </>
+            )
+          }
+
         </div>
       </div>
     </main>

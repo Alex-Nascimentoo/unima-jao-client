@@ -12,43 +12,64 @@ import { BankAccount } from '@/_types/bankAccount'
 import { Category } from '@/_types/category'
 
 type Props = {
-  onClose: () => void
+  onClose: (m: Movement) => void
   fetchMovements: () => Promise<void>
   movement: Movement | null
 }
 
 export default function MovementForm(props: Props) {
-  const [movement, setMovement] = React.useState<Movement | null>(null)
+  const [movement, setMovement] = React.useState<Movement | null>(props.movement ?? null)
   const [accountList, setAccountList] = React.useState<BankAccount[]>()
   const [categoryList, setCategoryList] = React.useState<Category[]>()
 
   async function handleSubmit() {
+    const isNegative = categoryList?.filter(c => c.id === movement?.categoria_id!)[0].tipo_id === 2
+
     // Update object if passed as prop
     // Otherwise create a new one
-    if (props.movement) {
-      const response = await api.patch(`/transacoes`, {
+    if (props.movement && props.movement.id !== 0) {
+      const response = await api.patch(`/editatransacao`, {
         id: props.movement.id,
         usuario_id: movement?.usuario_id,
         categoria_id: movement?.categoria_id,
         tipo_id: movement?.tipo_id,
         descricao: movement?.descricao,
+        valor: movement?.valor ? movement.valor * 100 : 0,
       })
 
       if (response.status !== 401 && response.status !== 200) {
         toast.error('Erro ao atualizar transação')
         return
       }
+
+      // Update bank account balance
+      const balance = accountList?.filter(c => c.id === movement?.conta_bancaria_id)[0].saldo_conta ?? 0
+
+      const oldValue = (props.movement?.valor ?? 0) * 100
+      const newValue = (movement?.valor ?? 0) * 100
+      const difference = newValue - oldValue
+
+      const finalValue = isNegative ? balance - difference : balance + difference
+
+      // Test logs
+      console.log('old value is: ', oldValue)
+      console.log('new value is: ', newValue)
+      console.log('difference is: ', difference)
+      console.log('final value is: ', finalValue)
+
+      // return
+
+      await api.patch('/contabancaria/editaconta', {
+        id: movement?.conta_bancaria_id,
+        saldo: finalValue,
+      })
+
       toast.success('Transação atualizada com sucesso')
     } else {
-      const cat = categoryList?.filter(c => c.id === movement?.categoria_id)[0].categoria
-      console.log('selecte category id is: ', movement?.categoria_id)
-      console.log('selected category is: ', cat)
-
       const response = await api.post('/criatransacao', {
         conta: movement?.conta_bancaria_id,
-        // categoria: movement?.categoria_id,
         categoria: categoryList?.filter(c => c.id === movement?.categoria_id)[0].categoria,
-        tipo: categoryList?.[movement?.categoria_id ?? 0]?.tipo_id || 1,
+        tipo: categoryList?.filter(c => c.id === movement?.categoria_id)[0].tipo_id || 1,
         descricao: movement?.descricao,
         valor: movement?.valor ? movement.valor * 100 : 0,
       })
@@ -57,6 +78,19 @@ export default function MovementForm(props: Props) {
         toast.error('Erro ao criar transação')
         return
       }
+
+      // Define new bank account balance
+      const balance = accountList?.filter(c => c.id === movement?.conta_bancaria_id)[0].saldo_conta ?? 0
+
+      const realValue = (movement?.valor ?? 0) * 100
+
+      const finalValue = isNegative ? balance - realValue! : balance + realValue!
+
+      await api.patch('/contabancaria/editaconta', {
+        id: movement?.conta_bancaria_id,
+        saldo: finalValue,
+      })
+
       toast.success('Transação criada com sucesso')
     }
 
@@ -64,35 +98,65 @@ export default function MovementForm(props: Props) {
       id: 0,
       usuario_id: 0,
       categoria_id: 0,
+      conta_bancaria_id: 0,
       tipo_id: 1,
       descricao: '',
     } as Movement)
 
-    props.onClose()
+    props.onClose({
+      id: 0,
+      categoria_id: categoryList![0].id,
+      tipo_id: categoryList![0].tipo_id,
+      conta_bancaria_id: accountList![0].id,
+      descricao: '',
+    } as Movement)
     await props.fetchMovements()
   }
 
   React.useEffect(() => {
-    async function fetchAccounts() {
+    if (!props.movement) {
+      setMovement({
+        id: 0,
+        categoria_id: 0,
+        conta_bancaria_id: 0,
+        tipo_id: 0,
+        descricao: '',
+      } as Movement)
+      return
+    }
+
+    setMovement(props.movement)
+  }, [props.movement])
+
+  React.useEffect(() => {
+    console.log('movement is: ', movement)
+  }, [movement])
+
+  React.useEffect(() => {
+    async function fetchAuxData() {
       const response = await api.get('/contabancaria')
+      const catResponse = await api.get('/categorias')
+
+      // console.log('cat response is: ', catResponse)
+
+      // var finalResult = []
+
+      // if (catResponse.data.status !== 500) {
+      //   finalResult = catResponse.data
+      // }
+
       setAccountList(response.data)
+      setCategoryList(catResponse.data)
+      // setCategoryList(finalResult)
+
       setMovement({
         ...movement ?? {} as Movement,
-        conta_bancaria_id: response.data[0].id,
+        conta_bancaria_id: response.data[0].id ?? 0,
+        categoria_id: catResponse.data[0]?.id ?? 0,
       })
     }
 
-    async function fetchCategories() {
-      const response = await api.get('/categorias')
-      setCategoryList(response.data)
-      setMovement({
-        ...movement ?? {} as Movement,
-        categoria_id: response.data[0].id,
-      })
-    }
-
-    fetchAccounts()
-    fetchCategories()
+    fetchAuxData()
   }, [])
 
   return (
@@ -165,7 +229,7 @@ export default function MovementForm(props: Props) {
             }}
           >
             {
-              accountList?.map((account, index) => (
+              accountList && accountList?.map((account, index) => (
                 <InputSelectOption
                   key={index}
                   value={account.id}
@@ -207,14 +271,14 @@ export default function MovementForm(props: Props) {
             }}
           >
             {
-              categoryList?.map((category, index) => (
+              categoryList ? categoryList?.map((category, index) => (
                 <InputSelectOption
                   key={index}
                   value={category.id}
                 >
                   {category.categoria}
                 </InputSelectOption>
-              ))
+              )) : <></>
             }
           </InputSelect>
         </div>
@@ -237,7 +301,13 @@ export default function MovementForm(props: Props) {
           '
           onClick={() => {
             setMovement(null)
-            props.onClose()
+            props.onClose({
+              id: 0,
+              categoria_id: categoryList![0]?.id ?? 0,
+              tipo_id: categoryList![0]?.tipo_id ?? 0,
+              conta_bancaria_id: accountList![0].id,
+              descricao: '',
+            } as Movement)
           }}
         >Cancelar</Button>
         <Button

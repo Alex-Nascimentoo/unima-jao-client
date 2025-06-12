@@ -27,7 +27,7 @@ ChartJS.register(
 export default function IncomeOutcomeGraph() {
   const [creditPayments, setCreditPayments] = useState<number[]>([])
   const [debitPayments, setDebitPayments] = useState<number[]>([])
-  const [monthsOld, setMonthsOld] = useState<number>(1)
+  const [monthsOld, setMonthsOld] = useState<number>(0)
   const [payments, setPayments] = useState<MovementList>({})
 
   useEffect(() => {
@@ -151,7 +151,11 @@ export default function IncomeOutcomeGraph() {
   }
 
   return (
-    <div>
+    <div
+      className='
+      max-w-[97%] mx-auto
+      '
+    >
       <div
         className="
         mb-4

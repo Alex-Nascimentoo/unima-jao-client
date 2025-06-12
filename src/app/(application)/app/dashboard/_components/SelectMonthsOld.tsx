@@ -37,10 +37,10 @@ export function SelectMonthsOld({
   return (
     <label className="flex flex-col gap-3">
       <Select.Root value={monthsOld} onValueChange={setMonthsOld}>
-        <Select.Trigger className="flex h-10 w-full min-w-[200px] items-center px-4 justify-between rounded-lg bg-odin-neutral-12 border border-odin-neutral-11 text-lg data-[placeholder]:text-odin-neutral-8">
+        <Select.Trigger className="flex h-10 w-full min-w-[200px] items-center px-4 justify-between rounded-lg bg-white border border-dark-gray text-lg data-[placeholder]:text-dark-gray">
           <Select.Value placeholder="Selecione um item na lista" />
           <Select.Icon>
-            <CaretDown size={24} className="text-odin-neutral-3" />
+            <CaretDown size={24} className="text-black" />
           </Select.Icon>
         </Select.Trigger>
         <Select.Portal>
@@ -49,7 +49,7 @@ export function SelectMonthsOld({
             sideOffset={4}
             className="z-20 min-w-[200px]"
           >
-            <Select.Viewport className="flex max-h-80 flex-col gap-[10px] overflow-y-auto rounded-lg bg-odin-neutral-12 border border-odin-neutral-11 p-3 shadow-box">
+            <Select.Viewport className="flex max-h-80 flex-col gap-[10px] overflow-y-auto rounded-lg bg-white border border-dark-gray p-3 shadow-box">
               {valueList &&
                 valueList.map((value) => (
                   <Select.Item

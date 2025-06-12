@@ -19,9 +19,13 @@ export function getMonthsBetweenDates({
   endDate,
   isShortDate = false,
 }: GetMonthsIntervalProps): string[] {
+  // console.log('inside getMonthsBetweenDates funciton')
   const start = dayjs(startDate.split('T')[0]).startOf('month')
   const end = dayjs(endDate).endOf('day')
   const dates = []
+
+  // console.log('start date is: ', start)
+  // console.log('end date is: ', end)
 
   let current = start
 
@@ -33,13 +37,16 @@ export function getMonthsBetweenDates({
 
   if (dates.length <= 2) {
     dates.length = 0
+    current = dayjs(startDate.split('T')[0]).startOf('day')
 
-    const daysInMonth = start.daysInMonth()
-    for (let i = 1; i <= daysInMonth; i++) {
-      dates.push(start.date(i).format('YYYY-MM-DD'))
+    while (current.isBefore(end, 'day') || current.isSame(end, 'day')) {
+      console.log('current is: ', current)
+      dates.push(current.format('YYYY-MM-DD'))
+      current = current.add(1, 'day')
     }
   }
 
+  // console.log('dates are: ', dates)
   return dates
 }
 
@@ -63,10 +70,13 @@ export function organizeDays(
     // Define range start and end (3 days)
     const rangeStart = dayjs().subtract(day, 'day').startOf('day')
     let rangeEnd = rangeStart.add(daysToReduce - 1, 'day').endOf('day')
+    // console.log('range start: ', rangeStart)
+    // console.log('range end: ', rangeEnd)
+    // console.log('============================')
 
     // If range end is greater than today, set it to today
     if (rangeEnd.isAfter(dayjs())) {
-      rangeEnd = dayjs()
+      rangeEnd = dayjs().endOf('day')
     }
 
     // If start and end of range are the same, only display one value
@@ -85,10 +95,14 @@ export function organizeDays(
     threeDayRanges[rangeKey] = { CREDIT: 0, DEBIT: 0 }
 
     // Map API response and fetch 'payments' data
-    pmResponse.data.paymentMethods?.forEach((payment: Movement) => {
+    pmResponse.data.Transacoes?.forEach((payment: Movement) => {
       const paymentDate = dayjs(payment.data)
 
       // If payment date is between range, than add payment amount to the respective operation
+      // console.log('range start: ', rangeStart)
+      // console.log('paymentDate, ', paymentDate)
+      // console.log('rangeEnd: ', rangeEnd)
+      // console.log('payment date is BETWEEN? ', paymentDate.isBetween(rangeStart, rangeEnd, null, '[]'))
       if (paymentDate.isBetween(rangeStart, rangeEnd, null, '[]')) {
         threeDayRanges[rangeKey][payment.tipo_id === 1 ? 'CREDIT' : 'DEBIT'] += payment.valor / 100
         return

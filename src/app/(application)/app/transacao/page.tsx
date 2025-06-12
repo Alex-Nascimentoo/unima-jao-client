@@ -46,7 +46,7 @@ export default function TransacaoPage() {
           text-white font-semibold
           '
           onClick={() => {
-            setMovement(null)
+            // setMovement(null)
             setIsOpen(true)
           }}
         >
@@ -57,10 +57,18 @@ export default function TransacaoPage() {
       <Modal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
+        clear={() => {
+          setMovement({
+            ...movement,
+            id: 0,
+            descricao: '',
+            valor: 0,
+          } as Movement)
+        }}
       >
         <MovementForm
-          onClose={() => {
-            setMovement(null)
+          onClose={(m: Movement) => {
+            setMovement(m)
             setIsOpen(false)
           }}
           fetchMovements={fetchMovements}
@@ -116,7 +124,10 @@ export default function TransacaoPage() {
               movement={movement}
               fetchMovements={fetchMovements}
               handleEdit={() => {
-                setMovement(movement)
+                setMovement({
+                  ...movement,
+                  valor: movement.valor / 100,
+                })
                 setIsOpen(true)
               }}
             />

@@ -45,6 +45,7 @@ export default function LoginPage() {
       })
 
       if (response.status !== 200) {
+        console.log('response is: ', response)
         toast.error('Erro ao fazer login')
         return
       }
