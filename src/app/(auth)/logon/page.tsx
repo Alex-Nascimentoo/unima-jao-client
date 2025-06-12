@@ -57,7 +57,7 @@ export default function LogonPage() {
       }
 
       if (response.status !== 201) {
-        toast.error('Erro ao cadastrar usuário')
+        toast.error(response.data.detail)
         return
       }
 
@@ -101,7 +101,7 @@ export default function LogonPage() {
         return
       }
 
-      toast.error('Erro ao cadastrar usuário')
+      toast.error(err.response.data.detail)
       return
     }
   }

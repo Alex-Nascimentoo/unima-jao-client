@@ -48,6 +48,7 @@ export default function BankAccountForm(props: Props) {
       }
 
       toast.success('Conta bancária criada com sucesso')
+      setBankAccount(null)
     }
 
     props.onClose()
